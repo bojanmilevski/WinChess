@@ -1,0 +1,28 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "Stockfish.NET/1.0.7": {
+        "runtime": {
+          "lib/netcoreapp3.1/Stockfish.NET.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Stockfish.NET/1.0.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q9qZkGfgX+AbMmcuDh5MGM8wDMbf5eU8MSWRX6eyRjO1HNQ4V7WFtGV0LJriuknwGB0L3CWmNNLusf8GPLrRwA==",
+      "path": "stockfish.net/1.0.7",
+      "hashPath": "stockfish.net.1.0.7.nupkg.sha512"
+    }
+  }
+}

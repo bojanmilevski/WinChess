@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WinChess.Source
 {
+    [Serializable]
     public class Tile
     {
         public Color TileColor { get; set; }
@@ -35,16 +36,6 @@ namespace WinChess.Source
             int Rank = 8 - Position.X;
             char File = (char)('a' + Position.Y);
             return $"{File}{Rank}";
-        }
-
-        public override string ToString()
-        {
-            if (Piece == null)
-            {
-                return " ";
-            }
-
-            return $"{Piece}";
         }
     }
 }

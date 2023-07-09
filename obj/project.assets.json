@@ -1,0 +1,102 @@
+{
+  "version": 3,
+  "targets": {
+    "net7.0-windows7.0": {
+      "Stockfish.NET/1.0.7": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp3.1/Stockfish.NET.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Stockfish.NET.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Stockfish.NET/1.0.7": {
+      "sha512": "q9qZkGfgX+AbMmcuDh5MGM8wDMbf5eU8MSWRX6eyRjO1HNQ4V7WFtGV0LJriuknwGB0L3CWmNNLusf8GPLrRwA==",
+      "type": "package",
+      "path": "stockfish.net/1.0.7",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netcoreapp3.1/Stockfish.NET.dll",
+        "stockfish.net.1.0.7.nupkg.sha512",
+        "stockfish.net.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net7.0-windows7.0": [
+      "Stockfish.NET >= 1.0.7"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\user\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\user\\Desktop\\winchess\\WinChess.csproj",
+      "projectName": "WinChess",
+      "projectPath": "C:\\Users\\user\\Desktop\\winchess\\WinChess.csproj",
+      "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\user\\Desktop\\winchess\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net7.0-windows"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net7.0-windows7.0": {
+          "targetAlias": "net7.0-windows",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net7.0-windows7.0": {
+        "targetAlias": "net7.0-windows",
+        "dependencies": {
+          "Stockfish.NET": {
+            "target": "Package",
+            "version": "[1.0.7, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App.WindowsForms": {
+            "privateAssets": "none"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WinChess.Source
 {
+    [Serializable]
     public enum PieceType
     {
         Pawn,
@@ -78,29 +79,6 @@ namespace WinChess.Source
                 default:
                     return null;
             }
-        }
-
-        public override string ToString()
-        {
-            char c = ' ';
-
-            switch(Type)
-            {
-                case PieceType.Pawn: c = 'p'; break;
-                case PieceType.Rook: c = 'r'; break;
-                case PieceType.Knight: c = 'n'; break;
-                case PieceType.Bishop: c = 'b'; break;
-                case PieceType.Queen: c = 'q'; break;
-                case PieceType.King: c = 'k'; break;
-                default: c = ' '; break;
-            }
-
-            if (Color == PieceColor.White)
-            {
-                return char.ToUpper(c).ToString();
-            }
-
-            return char.ToLower(c).ToString();
         }
     }
 }

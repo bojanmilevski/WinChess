@@ -1,30 +1,68 @@
 ﻿using Stockfish.NET;
+using System.ComponentModel.Design;
 using System.Text;
 
 namespace WinChess.Source
 {
+    [Serializable]
     public class Board
     {
+        private HashSet<Tile> ValidMoves { get; set; }
+        private List<List<Tile>> Tiles { get; set; }
+        private Stack<string> Undo { get; set; }
+        private Tile? SelectedTile { get; set; }
+        private const int DELTA = 25;
+        private const int FIELD_SIZE = 65;
+        private string FenString { get; set; }
         public IStockfish ChessEngine { get; set; }
-        public HashSet<Tile> ValidMoves { get; set; }
-        public List<List<Tile>> Tiles { get; set; }
-        public List<string> Moves { get; set; }
-        public Tile? SelectedTile { get; set; }
-        public string FenString { get; set; }
-        public const int DELTA = 25;
-        public const int FIELD_SIZE = 65;
-        public bool IsPlayerWhiteTurn { get; set; }
+        public HashSet<string> Moves { get; set; }
+        public bool IsPlayerTurn { get; set; }
 
         public Board()
         {
             FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
             ChessEngine = new Stockfish.NET.Stockfish(@"C:\Users\user\Desktop\stockfish_13_win_x64_avx2.exe");
             ChessEngine.SetFenPosition(FenString);
-            Tiles = UpdateBoard(FenString);
-            Moves = new List<string>();
+            Tiles = UpdateList(FenString);
+            Moves = new HashSet<string>();
             ValidMoves = new HashSet<Tile>();
+            Undo = new Stack<string>();
             SelectedTile = null;
-            IsPlayerWhiteTurn = FenString.Split(' ')[1] == "w";
+            IsPlayerTurn = true;
+        }
+
+        public void AIMove()
+        {
+            string Move = ChessEngine.GetBestMove();
+            UpdateBoard(Move);
+            IsPlayerTurn = !IsPlayerTurn;
+        }
+
+        private void UpdateBoard(string Move)
+        {
+            Moves.Add(Move);
+            ChessEngine.SetPosition(Moves.ToArray());
+            Tiles = UpdateList(ChessEngine.GetFenPosition());
+        }
+
+        public void UndoMove()
+        {
+            if (Moves.Count > 0)
+            {
+                //Undo.Push(Moves.Pop());
+                ChessEngine.SetPosition(Moves.ToArray());
+                Tiles = UpdateList(ChessEngine.GetFenPosition());
+            }
+        }
+
+        public void RedoMove()
+        {
+            if (Undo.Count > 0)
+            {
+                //Moves.Push(Undo.Pop());
+                ChessEngine.SetPosition(Moves.ToArray());
+                Tiles = UpdateList(ChessEngine.GetFenPosition());
+            }
         }
 
         private Color GetTileColor(int x, int y)
@@ -32,7 +70,7 @@ namespace WinChess.Source
             return (x + y) % 2 == 0 ? Color.White : Color.DarkGray;
         }
 
-        private List<List<Tile>> UpdateBoard(string FenString)
+        private List<List<Tile>> UpdateList(string FenString)
         {
             List<List<Tile>> tiles = new List<List<Tile>>(64);
             string[] ranks = FenString.Split(' ')[0].Split('/');
@@ -123,58 +161,45 @@ namespace WinChess.Source
             }
         }
 
-        public void Click(Point Point, Label Label)
+        private void ClickTile(Tile Tile, Point Point)
+        {
+            int x = DELTA + (Tile.Position.X * FIELD_SIZE);
+            int y = DELTA + (Tile.Position.Y * FIELD_SIZE);
+            Rectangle TileBounds = new Rectangle(y, x, FIELD_SIZE, FIELD_SIZE);
+
+            if (TileBounds.Contains(Point))
+            {
+                if (SelectedTile == Tile)
+                {
+                    SelectedTile = null;
+                    ValidMoves.Clear();
+                }
+
+                else if (SelectedTile == null)
+                {
+                    SelectedTile = Tile;
+                    GeneratePieceMoves(SelectedTile);
+                }
+
+                if (SelectedTile != null && Tile != SelectedTile && ValidMoves.Contains(Tile))
+                {
+                    UpdateBoard($"{SelectedTile.AlgebraicPosition}{Tile.AlgebraicPosition}");
+                    SelectedTile = null;
+                    ValidMoves.Clear();
+                    IsPlayerTurn = !IsPlayerTurn;
+                }
+            }
+        }
+
+        public void Click(Point Point)
         {
             foreach (var T in Tiles)
             {
                 foreach (var Tile in T)
                 {
-                    int x = DELTA + (Tile.Position.X * FIELD_SIZE);
-                    int y = DELTA + (Tile.Position.Y * FIELD_SIZE);
-                    Rectangle TileBounds = new Rectangle(y, x, FIELD_SIZE, FIELD_SIZE);
-
-                    if (TileBounds.Contains(Point))
-                    {
-                        if (SelectedTile == Tile)
-                        {
-                            SelectedTile = Tile;
-                            ValidMoves.Clear();
-                        }
-
-                        else if (SelectedTile == null)
-                        {
-                            SelectedTile = Tile;
-                            GeneratePieceMoves(SelectedTile);
-                        }
-
-                        if (SelectedTile != null && Tile != SelectedTile && ValidMoves.Contains(Tile))
-                        {
-                            Moves.Add($"{SelectedTile.AlgebraicPosition}{Tile.AlgebraicPosition}");
-                            ChessEngine.SetPosition(Moves.ToArray());
-                            Tiles = UpdateBoard(ChessEngine.GetFenPosition());
-                            IsPlayerWhiteTurn = FenString.Split(' ')[1] == "w";
-                            SelectedTile = null;
-                            ValidMoves.Clear();
-                        }
-                    }
+                    ClickTile(Tile, Point);
                 }
             }
-        }
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (var Ranks in Tiles)
-            {
-                foreach (var File in Ranks)
-                {
-                    sb.Append(File);
-                }
-
-                sb.Append('\n');
-            }
-
-            return sb.ToString();
         }
     }
 }
