@@ -1,5 +1,4 @@
 ﻿using Stockfish.NET;
-using System;
 using System.Text;
 
 namespace WinChess.Source
@@ -10,23 +9,24 @@ namespace WinChess.Source
         public HashSet<Tile> ValidMoves { get; set; }
         public List<List<Tile>> Tiles { get; set; }
         public List<string> Moves { get; set; }
-        public Tile SelectedTile { get; set; }
+        public Tile? SelectedTile { get; set; }
         public string FenString { get; set; }
         public const int DELTA = 25;
         public const int FIELD_SIZE = 65;
+        public bool IsPlayerWhiteTurn { get; set; }
 
         public Board()
         {
             FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-            Tiles = new List<List<Tile>>(64);
-            Tiles = UpdateBoard(FenString);
             ChessEngine = new Stockfish.NET.Stockfish(@"C:\Users\user\Desktop\stockfish_13_win_x64_avx2.exe");
             ChessEngine.SetFenPosition(FenString);
+            Tiles = UpdateBoard(FenString);
             Moves = new List<string>();
-            SelectedTile = null;
             ValidMoves = new HashSet<Tile>();
+            SelectedTile = null;
+            IsPlayerWhiteTurn = FenString.Split(' ')[1] == "w";
         }
-        
+
         private Color GetTileColor(int x, int y)
         {
             return (x + y) % 2 == 0 ? Color.White : Color.DarkGray;
@@ -37,34 +37,32 @@ namespace WinChess.Source
             List<List<Tile>> tiles = new List<List<Tile>>(64);
             string[] ranks = FenString.Split(' ')[0].Split('/');
 
-            for (int y = 0; y < ranks.Length; y++)
+            for (int x = 0; x < ranks.Length; x++)
             {
-                List<Tile> rankTiles = new List<Tile>();
-                string rank = ranks[y];
-                int x = 0;
+                List<Tile> files = new List<Tile>();
+                string rank = ranks[x];
+                int y = 0;
 
                 foreach (char c in rank)
                 {
-                    Point Position = new Point(x, y);
-
                     if (char.IsDigit(c))
                     {
-                        int numEmptySquares = int.Parse(c.ToString());
-                        for (int i = 0; i < numEmptySquares; i++)
+                        int empty = int.Parse(c.ToString());
+                        for (int i = 0; i < empty; i++)
                         {
-                            rankTiles.Add(new Tile(Position, null, GetTileColor(x, y)));
-                            x++;
+                            files.Add(new Tile(new Point(x, y), null, GetTileColor(x, y)));
+                            y++;
                         }
                     }
 
                     else
                     {
-                        rankTiles.Add(new Tile(Position, c, GetTileColor(x, y)));
-                        x++;
+                        files.Add(new Tile(new Point(x, y), c, GetTileColor(x, y)));
+                        y++;
                     }
                 }
 
-                tiles.Add(rankTiles);
+                tiles.Add(files);
             }
 
             return tiles;
@@ -101,7 +99,6 @@ namespace WinChess.Source
                     }
 
                     Graphics.DrawRectangle(new Pen(Color.Black), Rectangle);
-
                     Brush.Dispose();
                     x += FIELD_SIZE;
                 }
@@ -111,66 +108,53 @@ namespace WinChess.Source
             }
         }
 
-        private Tile GetTile(string Move)
-        {
-            Point Point = new Point(Move[0] - 'a', 8 - int.Parse(Move[1].ToString()));
-            return Tiles[Point.Y][Point.X];
-        }
-
-        private void GeneratePieceMoves(string Position)
+        private void GeneratePieceMoves(Tile Tile)
         {
             for (char File = 'a'; File <= 'h'; File++)
             {
                 for (int Rank = 1; Rank <= 8; Rank++)
                 {
-                    string NewPosition = $"{File}{Rank}";
-                    string Move = $"{Position}{NewPosition}";
+                    string Move = $"{Tile.AlgebraicPosition}{File}{Rank}";
                     if (ChessEngine.IsMoveCorrect(Move))
                     {
-                        ValidMoves.Add(GetTile(NewPosition));
+                        ValidMoves.Add(Tiles[8 - Rank][File - 'a']);
                     }
                 }
             }
         }
 
-        public void Click(Point Point)
+        public void Click(Point Point, Label Label)
         {
             foreach (var T in Tiles)
             {
                 foreach (var Tile in T)
                 {
-                    int fieldX = DELTA + (Tile.Position.X * FIELD_SIZE);
-                    int fieldY = DELTA + (Tile.Position.Y * FIELD_SIZE);
-                    Rectangle TileBounds = new Rectangle(fieldX, fieldY, FIELD_SIZE, FIELD_SIZE);
+                    int x = DELTA + (Tile.Position.X * FIELD_SIZE);
+                    int y = DELTA + (Tile.Position.Y * FIELD_SIZE);
+                    Rectangle TileBounds = new Rectangle(y, x, FIELD_SIZE, FIELD_SIZE);
 
                     if (TileBounds.Contains(Point))
                     {
-                        if (Tile == SelectedTile)
+                        if (SelectedTile == Tile)
                         {
-                            SelectedTile = null;
+                            SelectedTile = Tile;
                             ValidMoves.Clear();
                         }
 
-                        if (Tile != SelectedTile && ValidMoves.Contains(Tile))
+                        else if (SelectedTile == null)
+                        {
+                            SelectedTile = Tile;
+                            GeneratePieceMoves(SelectedTile);
+                        }
+
+                        if (SelectedTile != null && Tile != SelectedTile && ValidMoves.Contains(Tile))
                         {
                             Moves.Add($"{SelectedTile.AlgebraicPosition}{Tile.AlgebraicPosition}");
                             ChessEngine.SetPosition(Moves.ToArray());
-                            string update = ChessEngine.GetFenPosition();
-                            Tiles = UpdateBoard(update);
+                            Tiles = UpdateBoard(ChessEngine.GetFenPosition());
+                            IsPlayerWhiteTurn = FenString.Split(' ')[1] == "w";
                             SelectedTile = null;
                             ValidMoves.Clear();
-                        }
-
-                        else
-                        {
-                            SelectedTile = Tile;
-                            if (SelectedTile.Piece == null)
-                            {
-                                return;
-                            }
-
-                            ValidMoves.Clear();
-                            GeneratePieceMoves(SelectedTile.AlgebraicPosition);
                         }
                     }
                 }

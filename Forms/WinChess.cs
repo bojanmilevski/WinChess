@@ -21,7 +21,7 @@ namespace winchess
 
         private void WinChess_MouseClick(object sender, MouseEventArgs e)
         {
-            Game.Click(e.Location);
+            Game.Click(e.Location, label1);
             Invalidate();
         }
     }

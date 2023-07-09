@@ -11,7 +11,6 @@ namespace WinChess.Source
     {
         public Board Board { get; set; }
         public bool IsPlayerTurn { get; set; }
-        public string FenString { get; set; }
 
         public Game()
         {
@@ -24,9 +23,9 @@ namespace WinChess.Source
             Board.Draw(Graphics);
         }
 
-        public void Click(Point Point)
+        public void Click(Point Point, Label Label)
         {
-            Board.Click(Point);
+            Board.Click(Point, Label);
         }
     }
 }

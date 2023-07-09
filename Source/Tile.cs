@@ -32,8 +32,8 @@ namespace WinChess.Source
 
         private string GetAlgebraicPosition(Point Position)
         {
-            int Rank = 8 - Position.Y;
-            char File = (char)('a' + Position.X);
+            int Rank = 8 - Position.X;
+            char File = (char)('a' + Position.Y);
             return $"{File}{Rank}";
         }
 
