@@ -1,4 +1,6 @@
 using System.Configuration;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using WinChess.Source;
 
@@ -8,7 +10,6 @@ namespace winchess
     {
         private bool IsGame { get; set; }
         private Board Board { get; set; }
-        private bool IsAIPlaying { get; set; }
         private int PlayerSeconds { get; set; }
         private int OpponentSeconds { get; set; }
 
@@ -17,7 +18,6 @@ namespace winchess
             InitializeComponent();
             DoubleBuffered = true;
             Board = new Board();
-            IsAIPlaying = true;
             PlayerSeconds = 0;
             OpponentSeconds = 0;
             lIsGame.Text = "Game Status:\nNOT STARTED";
@@ -46,7 +46,7 @@ namespace winchess
 
         private void UpdateMoveHistory()
         {
-            if (Board.Moves.Count > 0)
+            if (Board.Moves.Count > 0 && !lbMoveHistory.Items.Contains(Board.Moves.ToArray().LastOrDefault()))
             {
                 lbMoveHistory.Items.Add(Board.Moves.ToArray().LastOrDefault());
             }
@@ -139,6 +139,18 @@ namespace winchess
                 UpdateMoveHistory();
                 Invalidate();
             }
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Board.UndoMove();
+            Invalidate();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Board.RedoMove();
+            Invalidate();
         }
     }
 }

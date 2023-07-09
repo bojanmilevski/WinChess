@@ -1,5 +1,6 @@
 ﻿using Stockfish.NET;
 using System.ComponentModel.Design;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace WinChess.Source

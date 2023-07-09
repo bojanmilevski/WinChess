@@ -66,7 +66,6 @@
             aboutToolStripMenuItem = new ToolStripMenuItem();
             opponentTimer = new System.Windows.Forms.Timer(components);
             lbMoveHistory = new ListBox();
-            button1 = new Button();
             btnUndo = new Button();
             btnRedo = new Button();
             tbPlayerTime = new TextBox();
@@ -89,7 +88,7 @@
             // 
             btnStart.Location = new Point(554, 526);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(75, 23);
+            btnStart.Size = new Size(218, 23);
             btnStart.TabIndex = 1;
             btnStart.Text = "Start Game";
             btnStart.UseVisualStyleBackColor = true;
@@ -208,6 +207,7 @@
             undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
             undoToolStripMenuItem.Size = new Size(144, 22);
             undoToolStripMenuItem.Text = "&Undo";
+            undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
             // 
             // redoToolStripMenuItem
             // 
@@ -215,6 +215,7 @@
             redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
             redoToolStripMenuItem.Size = new Size(144, 22);
             redoToolStripMenuItem.Text = "&Redo";
+            redoToolStripMenuItem.Click += redoToolStripMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
@@ -327,15 +328,6 @@
             lbMoveHistory.Size = new Size(218, 289);
             lbMoveHistory.TabIndex = 4;
             // 
-            // button1
-            // 
-            button1.Location = new Point(697, 526);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 5;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            // 
             // btnUndo
             // 
             btnUndo.Location = new Point(554, 197);
@@ -401,7 +393,6 @@
             Controls.Add(tbPlayerTime);
             Controls.Add(btnRedo);
             Controls.Add(btnUndo);
-            Controls.Add(button1);
             Controls.Add(lbMoveHistory);
             Controls.Add(lIsGame);
             Controls.Add(btnStart);
@@ -457,7 +448,6 @@
         private ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.Timer opponentTimer;
         private ListBox lbMoveHistory;
-        private Button button1;
         private Button btnUndo;
         private Button btnRedo;
         private TextBox tbPlayerTime;
