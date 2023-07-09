@@ -15,8 +15,13 @@ namespace winchess
 
         private void WinChess_Paint(object sender, PaintEventArgs e)
         {
-            // label.Text = Game.Board.ToString();
             Game.Draw(e.Graphics);
+            Invalidate();
+        }
+
+        private void WinChess_MouseClick(object sender, MouseEventArgs e)
+        {
+            Game.Click(e.Location);
             Invalidate();
         }
     }

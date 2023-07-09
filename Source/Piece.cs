@@ -35,51 +35,6 @@ namespace WinChess.Source
             Image = SetImage(Type, Color);
         }
 
-        private Image SetImage(PieceType Type, PieceColor Color)
-        {
-            switch (Type)
-            {
-                case PieceType.Pawn:
-                    if (Color == PieceColor.White)
-                    {
-                        return Properties.Resources.w_pawn;
-                    }
-                    return Properties.Resources.b_pawn;
-                case PieceType.Rook:
-                    if (Color == PieceColor.White)
-                    {
-                        return Properties.Resources.w_rook;
-                    }
-                    return Properties.Resources.b_rook;
-                case PieceType.Knight:
-                    if (Color == PieceColor.White)
-                    {
-                        return Properties.Resources.w_knight;
-                    }
-                    return Properties.Resources.b_knight;
-                case PieceType.Bishop:
-                    if (Color == PieceColor.White)
-                    {
-                        return Properties.Resources.w_bishop;
-                    }
-                    return Properties.Resources.b_bishop;
-                case PieceType.Queen:
-                    if (Color == PieceColor.White)
-                    {
-                        return Properties.Resources.w_queen;
-                    }
-                    return Properties.Resources.b_queen;
-                case PieceType.King:
-                    if (Color == PieceColor.White)
-                    {
-                        return Properties.Resources.w_king;
-                    }
-                    return Properties.Resources.b_king;
-                default:
-                    return Properties.Resources.w_pawn;
-            }
-        }
-
         private PieceType SetType(char Piece)
         {
             switch(char.ToLower(Piece))
@@ -102,6 +57,27 @@ namespace WinChess.Source
             }
 
             return PieceColor.Black;
+        }
+
+        private Image SetImage(PieceType Type, PieceColor Color)
+        {
+            switch (Type)
+            {
+                case PieceType.Pawn:
+                    return Color == PieceColor.White ? Properties.Resources.w_pawn : Properties.Resources.b_pawn;
+                case PieceType.Rook:
+                    return Color == PieceColor.White ? Properties.Resources.w_rook : Properties.Resources.b_rook;
+                case PieceType.Knight:
+                    return Color == PieceColor.White ? Properties.Resources.w_knight : Properties.Resources.b_knight;
+                case PieceType.Bishop:
+                    return Color == PieceColor.White ? Properties.Resources.w_bishop : Properties.Resources.b_bishop;
+                case PieceType.Queen:
+                    return Color == PieceColor.White ? Properties.Resources.w_queen : Properties.Resources.b_queen;
+                case PieceType.King:
+                    return Color == PieceColor.White ? Properties.Resources.w_king : Properties.Resources.b_king;
+                default:
+                    return null;
+            }
         }
 
         public override string ToString()

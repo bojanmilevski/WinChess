@@ -12,14 +12,12 @@ namespace WinChess.Source
         public Piece? Piece { get; set; }
         public Point Position { get; set; }
         public string AlgebraicPosition { get; set; }
-        public bool IsSelected { get; set; }
 
         public Tile(Point Position, char? Piece, Color TileColor)
         {
             this.Position = Position;
             this.TileColor = TileColor;
             AlgebraicPosition = GetAlgebraicPosition(Position);
-            IsSelected = false;
 
             if (Piece.HasValue)
             {
@@ -35,7 +33,7 @@ namespace WinChess.Source
         private string GetAlgebraicPosition(Point Position)
         {
             int Rank = 8 - Position.Y;
-            char File = (char)('a' - Position.X);
+            char File = (char)('a' + Position.X);
             return $"{File}{Rank}";
         }
 

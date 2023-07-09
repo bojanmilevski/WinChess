@@ -1,121 +1,180 @@
 ﻿using Stockfish.NET;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WinChess.Source
 {
     public class Board
     {
-        public List<List<Tile>> Tiles { get; set; }
         public IStockfish ChessEngine { get; set; }
+        public HashSet<Tile> ValidMoves { get; set; }
+        public List<List<Tile>> Tiles { get; set; }
+        public List<string> Moves { get; set; }
+        public Tile SelectedTile { get; set; }
         public string FenString { get; set; }
+        public const int DELTA = 25;
+        public const int FIELD_SIZE = 65;
 
         public Board()
         {
             FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            Tiles = new List<List<Tile>>(64);
             Tiles = UpdateBoard(FenString);
             ChessEngine = new Stockfish.NET.Stockfish(@"C:\Users\user\Desktop\stockfish_13_win_x64_avx2.exe");
             ChessEngine.SetFenPosition(FenString);
+            Moves = new List<string>();
+            SelectedTile = null;
+            ValidMoves = new HashSet<Tile>();
+        }
+        
+        private Color GetTileColor(int x, int y)
+        {
+            return (x + y) % 2 == 0 ? Color.White : Color.DarkGray;
         }
 
         private List<List<Tile>> UpdateBoard(string FenString)
         {
-            List<List<Tile>> Tiles = new List<List<Tile>>();
-            string[] rows = FenString.Split(' ')[0].Split('/');
-            int rowLength = rows.Length;
-            int colLength = rows[0].Length;
-            bool isWhiteTile = true;
+            List<List<Tile>> tiles = new List<List<Tile>>(64);
+            string[] ranks = FenString.Split(' ')[0].Split('/');
 
-            for (int x = 0; x < rowLength; x++)
+            for (int y = 0; y < ranks.Length; y++)
             {
-                List<Tile> tiles = new List<Tile>();
+                List<Tile> rankTiles = new List<Tile>();
+                string rank = ranks[y];
+                int x = 0;
 
-                for (int y = 0; y < colLength; y++)
+                foreach (char c in rank)
                 {
-                    char c = rows[x][y];
+                    Point Position = new Point(x, y);
 
                     if (char.IsDigit(c))
                     {
-                        int emptySpaces = int.Parse(c.ToString());
-
-                        for (int i = 0; i < emptySpaces; i++)
+                        int numEmptySquares = int.Parse(c.ToString());
+                        for (int i = 0; i < numEmptySquares; i++)
                         {
-                            tiles.Add(new Tile(new Point(y++, x), null, GetTileColor(isWhiteTile)));
-                            isWhiteTile = !isWhiteTile;
+                            rankTiles.Add(new Tile(Position, null, GetTileColor(x, y)));
+                            x++;
                         }
-
-                        y += emptySpaces - 1;
                     }
 
                     else
                     {
-                        tiles.Add(new Tile(new Point(y, x), c, GetTileColor(isWhiteTile)));
-                        isWhiteTile = !isWhiteTile;
+                        rankTiles.Add(new Tile(Position, c, GetTileColor(x, y)));
+                        x++;
                     }
                 }
 
-                Tiles.Add(tiles);
-                isWhiteTile = !isWhiteTile;
+                tiles.Add(rankTiles);
             }
 
-            return this.Tiles;
-        }
-
-        private Color GetTileColor(bool IsWhiteTile)
-        {
-            return IsWhiteTile ? Color.White : Color.Gray;
+            return tiles;
         }
 
         public void Draw(Graphics Graphics)
         {
-            const int delta = 25;
-            const int size = 65;
-            int x = delta;
-            int y = delta;
+            int x = DELTA;
+            int y = DELTA;
+            Size Size = new Size(FIELD_SIZE, FIELD_SIZE);
 
-            foreach (var Tile in Tiles)
+            foreach (var T in Tiles)
             {
-                foreach (var Field in Tile)
+                foreach (var Tile in T)
                 {
-                    Brush Brush = new SolidBrush(Field.TileColor);
+                    Brush Brush = new SolidBrush(Tile.TileColor);
                     Point Position = new Point(x, y);
-                    Size Size = new Size(size, size);
                     Rectangle Rectangle = new Rectangle(Position, Size);
                     Graphics.FillRectangle(Brush, Rectangle);
-                    if (Field.Piece != null)
+
+                    if (Tile == SelectedTile)
                     {
-                        Graphics.DrawImage(Field.Piece.Image, new Point(x, y));
+                        Graphics.FillRectangle(new SolidBrush(Color.LightGreen), Rectangle);
                     }
-                    x += size;
+
+                    if (ValidMoves.Contains(Tile))
+                    {
+                        Graphics.FillRectangle(new SolidBrush(Color.LightYellow), Rectangle);
+                    }
+
+                    if (Tile.Piece != null)
+                    {
+                        Graphics.DrawImage(Tile.Piece.Image, new Point(x, y));
+                    }
+
+                    Graphics.DrawRectangle(new Pen(Color.Black), Rectangle);
+
+                    Brush.Dispose();
+                    x += FIELD_SIZE;
                 }
 
-                x = delta;
-                y += size;
+                x = DELTA;
+                y += FIELD_SIZE;
             }
         }
 
-        private HashSet<string>? GeneratePieceMoves(string Position)
+        private Tile GetTile(string Move)
         {
-            HashSet<string> Moves = new HashSet<string>();
+            Point Point = new Point(Move[0] - 'a', 8 - int.Parse(Move[1].ToString()));
+            return Tiles[Point.Y][Point.X];
+        }
 
+        private void GeneratePieceMoves(string Position)
+        {
             for (char File = 'a'; File <= 'h'; File++)
             {
                 for (int Rank = 1; Rank <= 8; Rank++)
                 {
-                    string Move = $"{Position}{File}{Rank}";
+                    string NewPosition = $"{File}{Rank}";
+                    string Move = $"{Position}{NewPosition}";
                     if (ChessEngine.IsMoveCorrect(Move))
                     {
-                        Moves.Add(Move);
+                        ValidMoves.Add(GetTile(NewPosition));
                     }
                 }
             }
+        }
 
-            return Moves;
+        public void Click(Point Point)
+        {
+            foreach (var T in Tiles)
+            {
+                foreach (var Tile in T)
+                {
+                    int fieldX = DELTA + (Tile.Position.X * FIELD_SIZE);
+                    int fieldY = DELTA + (Tile.Position.Y * FIELD_SIZE);
+                    Rectangle TileBounds = new Rectangle(fieldX, fieldY, FIELD_SIZE, FIELD_SIZE);
+
+                    if (TileBounds.Contains(Point))
+                    {
+                        if (Tile == SelectedTile)
+                        {
+                            SelectedTile = null;
+                            ValidMoves.Clear();
+                        }
+
+                        if (Tile != SelectedTile && ValidMoves.Contains(Tile))
+                        {
+                            Moves.Add($"{SelectedTile.AlgebraicPosition}{Tile.AlgebraicPosition}");
+                            ChessEngine.SetPosition(Moves.ToArray());
+                            string update = ChessEngine.GetFenPosition();
+                            Tiles = UpdateBoard(update);
+                            SelectedTile = null;
+                            ValidMoves.Clear();
+                        }
+
+                        else
+                        {
+                            SelectedTile = Tile;
+                            if (SelectedTile.Piece == null)
+                            {
+                                return;
+                            }
+
+                            ValidMoves.Clear();
+                            GeneratePieceMoves(SelectedTile.AlgebraicPosition);
+                        }
+                    }
+                }
+            }
         }
 
         public override string ToString()
@@ -123,7 +182,7 @@ namespace WinChess.Source
             StringBuilder sb = new StringBuilder();
             foreach (var Ranks in Tiles)
             {
-                foreach(var File in Ranks)
+                foreach (var File in Ranks)
                 {
                     sb.Append(File);
                 }

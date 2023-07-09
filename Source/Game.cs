@@ -16,12 +16,17 @@ namespace WinChess.Source
         public Game()
         {
             Board = new Board();
-            IsPlayerTurn = FenString.Split(' ')[1] == "w";
+            IsPlayerTurn = Board.FenString.Split(' ')[1] == "w";
         }
 
         public void Draw(Graphics Graphics)
         {
             Board.Draw(Graphics);
+        }
+
+        public void Click(Point Point)
+        {
+            Board.Click(Point);
         }
     }
 }
