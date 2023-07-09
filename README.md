@@ -2,6 +2,8 @@
 # WinChess
 `WinChess` is a chess program written using `C#`, `Windows Forms` and the [`Stockfish Chess Engine`](https://stockfishchess.org/).
 
+![Screenshot](https://github.com/bojanmilevski/WinChess/blob/main/Screenshots/screenshot.png)
+
 ## Chess Engine
 `Stockfish` is an open source chess engine, that manages to constantly rank number one on chess engine rating lists. According to [Wikipedia](https://en.wikipedia.org/wiki/Stockfish_(chess)), it's estimated elo is around 3550 points. It has won the Top Chess Engine Championship 14 times and the Chess.com Computer Chess Championship 19 times.  [Stockfish.NET](https://github.com/Oremiro/Stockfish.NET) is a **wrapper** library that implements the Stockfish game engint in C#.
 
