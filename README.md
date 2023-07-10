@@ -1,13 +1,27 @@
 
 # WinChess
-`WinChess` is a chess program written using `C#`, `Windows Forms` and the [`Stockfish Chess Engine`](https://stockfishchess.org/).
-
-![Screenshot](https://github.com/bojanmilevski/WinChess/blob/main/Screenshots/screenshot.png)
+`WinChess` is a chess program that utilizes `C#`, `Windows Forms` and the [`Stockfish Chess Engine`](https://stockfishchess.org/).
 
 ## Chess Engine
 `Stockfish` is an open source chess engine, that manages to constantly rank number one on chess engine rating lists. According to [Wikipedia](https://en.wikipedia.org/wiki/Stockfish_(chess)), it's estimated elo is around 3550 points. It has won the Top Chess Engine Championship 14 times and the Chess.com Computer Chess Championship 19 times.  [Stockfish.NET](https://github.com/Oremiro/Stockfish.NET) is a **wrapper** library that implements the Stockfish game engint in C#.
 
 As of the time writing this project, the wrapper library has been abandoned as of April 28, 2022. 
+
+## Prerequisites
+To start this program, you need to install the `Stockfish` executable, specifically v13.0. It can be found [here](<https://www.dropbox.com/sh/75gzfgu7qo94pvh/AAB0vCuaC3EAD0PHKR1nqX7Ja/Stockfish%2013?dl=0&preview=stockfish_13_win_x64_avx2.zip&subfolder_nav_tracking=1).
+
+After installing the zip file, you need to extract the `.exe` file anywhere on your computer.
+
+Change the `ChessEngine` variable in `.\Source\Board.cs`, so it points to the executable's location:
+
+```csharp
+Board()
+{
+    ...
+    ChessEngine = new Stockfish.NET.Stockfish(@"C:\PATH\TO\EXECUTABLE.exe");
+    ...
+}
+```
 
 ## Functionality
 Due to `Stockfish.NET` being a wrapper library and not a classic library, it has a lot of caveats (which will be discussed later). The user has to install the `Stockfish` chess engine v13 before the solution can be compiled. The limited funcionality, slow performance and many trade-offs have allowed us to create a half-baked chess game that still manages to impress. 
