@@ -8,7 +8,7 @@
 As of the time writing this project, the wrapper library has been abandoned as of April 28, 2022. 
 
 ## Prerequisites
-To start this program, you need to install the `Stockfish` executable, specifically v13.0. It can be found [here](<https://www.dropbox.com/sh/75gzfgu7qo94pvh/AAB0vCuaC3EAD0PHKR1nqX7Ja/Stockfish%2013?dl=0&preview=stockfish_13_win_x64_avx2.zip&subfolder_nav_tracking=1).
+To start this program, you need to install the `Stockfish` executable, specifically v13.0. It can be found [here](https://www.dropbox.com/sh/75gzfgu7qo94pvh/AAB0vCuaC3EAD0PHKR1nqX7Ja/Stockfish%2013?dl=0&preview=stockfish_13_win_x64_avx2.zip&subfolder_nav_tracking=1).
 
 After installing the zip file, you need to extract the `.exe` file anywhere on your computer.
 
